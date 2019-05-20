@@ -69,4 +69,14 @@ Pre-release (and not intended for production use) are tagged with *_rc*,
 To prevent mistakes, pre-release versions will never be released under the
 stable pattern. This means that, at the moment, `tcl:8.7` won't be published.
 
+## LICENSE
+
+All dioptra repos are licensed under [LGPLv3](LICENSE.md).
+
+TCL is licensed under a [BSD variant](http://tcl.tk/software/tcltk/license.html).
+
+Dioptra icon was made by [Smashicons](https://www.flaticon.com/authors/smashicons)
+from [www.flaticon.com](https://www.flaticon.com/) and is licensed under [CC
+3.0 BY](http://creativecommons.org/licenses/by/3.0/).
+
 <!-- vim: set ai si sta et sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=markdown:
