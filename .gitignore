@@ -2,7 +2,8 @@
 # vim: set ai si sta et sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=conf:
 
 **/*
-!.gitattributes
 !.editorconfig
+!.gitattributes
+!CODEOWNERS
 !README.md
 !LICENSE.md
