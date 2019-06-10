@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
 # vim: set ai si sta et sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=conf:
 
-**/*
-!.gitattributes
+**/* text encoding=utf-8 eol=lf merge=astextplain
