@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+# vim: set ai si sta et sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=dosini:
+
+# https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = tab
+indent_style = space
+insert_final_newline = true
+tab_width = 4
+trim_trailing_whitespace = true
