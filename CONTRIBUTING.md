@@ -11,7 +11,8 @@ behave in face of your actions.
 
 Also, worths mention that [issue trackers](../../issues) aren't the right place
 to ask for help. Common tasks may be already documented on any of the community
-files like [README](README.md), this contributing file or [LICENSE](LICENSE.md).
+files like [README](README.md), this contributing file, [LICENSE](LICENSE.md)
+or [SUPPORT](SUPPORT.md).
 
 ## Getting started
 
