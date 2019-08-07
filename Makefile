@@ -8,12 +8,22 @@ REPOSITORY = ""
 
 NPM = npm
 
+SED = sed
+
+SOURCES = $(sort $(wildcard src/*.Dockerfile))
+
 build: Dockerfile
 	docker build \
 		-f Dockerfile \
 		-t $(shell test -z "$(REPOSITORY)" || echo "$(REPOSITORY)/")$(VENDOR)/$(NAME):$(VERSION) \
 		$(shell env bash -c "env -0 | while IFS='=' read -d '' -r key val; do echo \"--build-arg=\$${key}='\$${val}'\"; done") \
 		.
+
+Dockerfile: $(SOURCES)
+	$(SED) -n -r -e '/^([^#]|$$)/w $@' $(SOURCES)
+
+clean:
+	$(RM) Dockerfile
 
 lint: markdownlint
 
