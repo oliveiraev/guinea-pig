@@ -8,6 +8,10 @@ REPOSITORY = ""
 
 NPM = npm
 
+SED = sed
+
+SOURCES = $(sort $(wildcard src/*.Dockerfile))
+
 build: Dockerfile
 	docker build \
 		-f Dockerfile \
@@ -21,6 +25,12 @@ lint: node_modules/.bin/markdownlint
 node_modules/.bin/markdownlint:
 	$(NPM) i --no-save markdownlint-cli
 
-.PHONY: build lint
+Dockerfile: $(SOURCES)
+	$(SED) -n w"$(@)" $(SOURCES)
+
+clean:
+	$(RM) Dockerfile
+
+.PHONY: build lint clean
 
 # vim: set ai si sta sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=make:
