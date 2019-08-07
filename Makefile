@@ -19,14 +19,22 @@ build: Dockerfile
 		$$(env | sed -r -e 's/^/--build-arg=/g') \
 		.
 
-lint: node_modules/.bin/markdownlint
+lint: node_modules/.bin/markdownlint bin/hadolint
 	./node_modules/.bin/markdownlint -i node_modules -i LICENSE.md .
+	./bin/hadolint $(SOURCES)
 
 node_modules/.bin/markdownlint:
 	$(NPM) i --no-save markdownlint-cli
 
-Dockerfile: $(SOURCES)
-	$(SED) -n w"$(@)" $(SOURCES)
+bin/hadolint:
+	mkdir -p bin
+	docker create --name=hadolint-for-$(NAME)-$(VERSION) hadolint/hadolint
+	docker cp hadolint-for-$(NAME)-$(VERSION):/bin/hadolint bin/
+	docker rm hadolint-for-$(NAME)-$(VERSION)
+
+Dockerfile: $(SOURCES) lint
+	$(SED) -n -r -e '/^([^#]|$$)/w $@' $(SOURCES)
+	./bin/hadolint $@
 
 clean:
 	$(RM) Dockerfile
