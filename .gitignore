@@ -9,4 +9,6 @@
 !LICENSE.md
 !Makefile
 !README.md
+!/src
+!/src/*.Dockerfile
 !SUPPORT.md
