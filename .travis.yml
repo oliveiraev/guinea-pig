@@ -1,0 +1,45 @@
+# vim: set ai si sta et sw=2 sts=2 fenc=utf-8 nobomb eol ff=unix ft=yaml:
+git:
+  depth: 50
+cache:
+  pip: true
+  npm: true
+stages:
+  - name: "Lint"
+  - name: "Build"
+jobs:
+  include:
+    - stage: "Lint"
+      name: "Markdown Lint"
+      os: "linux"
+      dist: "bionic"
+      language: "node_js"
+      node_js:
+        - "12.8.0"
+      install: "skip"
+      script: "make markdownlint"
+    - stage: "Lint"
+      name: "Dockerfile lint"
+      os: "linux"
+      dist: "bionic"
+      language: "minimal"
+      script: "make dockerfilelint"
+    - stage: "Build"
+      name: "Build docker image"
+      language: "minimal"
+      script: make build
+      before_deploy:
+        - export TRAVIS_TAG=$(grep -P '^VERSION = ' Makefile | sed -r -e 's/VERSION = ([0-9.]+(_alpha|_beta|_rc)\d*)?.*/\1/')
+        - docker build --target=release --tag=release-assets:latest -f Dockerfile .
+        - docker create --name=assets-container release-assets:latest
+        - docker run --rm -it release-assets:latest find / -maxdepth 1 -type f -name \*.tar.gz -print0 | xargs -0 -I{} docker cp assets-container:"{}" .
+      deploy:
+        provider: "releases"
+        skip_cleanup: true
+        draft: true
+        api_key: ${GITHUB_OAUTH_TOKEN}
+        file_glob: true
+        file: "*.tar.gz"
+        overwrite: true
+        on:
+          tags: true

@@ -4,6 +4,7 @@
 **/*
 !.editorconfig
 !.gitattributes
+!.travis.yml
 !CODEOWNERS
 !CONTRIBUTING.md
 !LICENSE.md
