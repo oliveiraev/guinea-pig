@@ -1,0 +1,53 @@
+# vim: set ai si sta et sw=2 sts=2 fenc=utf-8 nobomb eol ff=unix ft=yaml:
+os:
+  - "linux"
+dist: "bionic"
+language: "generic"
+addons:
+  apt:
+    update: true
+git:
+  depth: 50
+node_js:
+  - "LTS"
+python:
+  - "3.7"
+stages:
+  - name: "Lint"
+  - name: "Build"
+  - name: "Test"
+  - name: "Deploy"
+    if: tag IS present
+jobs:
+  include:
+    - stage: "Lint"
+      name: "Markdown Lint"
+      script: make lint-markdown
+    - stage: "Lint"
+      name: "Dockerfile lint"
+      script: make lint-dockerfiles
+    - stage: "Lint"
+      name: "YAML lint"
+      script: make lint-yaml
+    - stage: "Build"
+      name: "Final Dockerfile build"
+      script: make Dockerfile
+    - stage: "Test"
+      name: "Build test"
+      script: docker build .
+    - stage: "Deploy"
+      name: "Assets build"
+      script: |
+        docker build --target=dist --tag=release-assets:latest -f Dockerfile .;
+        docker create --name=assets-container release-assets:latest;
+        docker cp assets-container:/dist.tar.gz;
+        mv dist.tar.gz $(echo ${TRAVIS_REPO_SLUG} | awk -F'/' '{print $NF}')-${TRAVIS_TAG}.tar.gz
+      deploy:
+        provider: releases
+        skip_cleanup: true
+        api_key: ${GITHUB_OAUTH_TOKEN}
+        file_glob: true
+        file: "*.tar.gz"
+        overwrite: true
+        on:
+          tags: true
