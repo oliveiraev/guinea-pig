@@ -18,6 +18,8 @@ SED = sed
 
 SOURCES = $(sort $(wildcard src/*.Dockerfile))
 
+PYTHON = $(shell python3 -c'print(__import__("sys").executable)')
+
 build: Dockerfile
 	docker build \
 		-f Dockerfile \
@@ -59,6 +61,12 @@ markdownlint: node_modules/.bin/markdownlint
 node_modules/.bin/markdownlint:
 	$(NPM) i --no-save markdownlint-cli
 
-.PHONY: build clean lint dockerfilelint markdownlint
+yamllint: python_modules/yamllint/__main__.py
+	PYTHONPATH=python_modules $(PYTHON) $< -d'{"ignore": "node_modules"}' -s .
+
+python_modules/yamllint/__main__.py:
+	echo H4sIAEvgUl0CA12MwQrCQAxE7/mK3NpeFrwWPHrwG0RKlFQC3d2QDbL9e7vag3oZeI+ZcVtHQJwtR1TRMElytkQLStRsjpEkAdc7q+P5rU5m2b5HP1XYoawFYItgTMukxrNUPDYdblR4N/DHW6PrPjuu4n277BuRPZ6Xw3gdBngBgHgg7rMAAAA= | base64 -d | gzip -d | $(PYTHON) - install --target=python_modules yamllint
+
+.PHONY: build clean lint dockerfilelint markdownlint yamllint
 
 # vim: set ai si sta sw=4 sts=4 fenc=utf-8 nobomb eol ff=unix ft=make:

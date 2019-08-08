@@ -24,8 +24,19 @@ jobs:
       dist: "bionic"
       language: "minimal"
       script: "make dockerfilelint"
+    - stage: "Lint"
+      name: "YAML lint"
+      os: "linux"
+      dist: "bionic"
+      language: "python"
+      python:
+        - "3.7"
+      install: "skip"
+      script: "make yamllint"
     - stage: "Build"
       name: "Build docker image"
+      os: "linux"
+      dist: "bionic"
       language: "minimal"
       script: make build
       before_deploy:
