@@ -7,6 +7,10 @@ cache:
 stages:
   - name: "Lint"
   - name: "Build"
+  - name: "Tag"
+    if: type = push AND tag IS blank AND branch =~ master|devel
+  - name: "Release"
+    if: tag IS present
 jobs:
   include:
     - stage: "Lint"
@@ -39,8 +43,29 @@ jobs:
       dist: "bionic"
       language: "minimal"
       script: make build
-      before_deploy:
-        - export TRAVIS_TAG=$(grep -P '^VERSION = ' Makefile | sed -r -e 's/VERSION = ([0-9.]+(_alpha|_beta|_rc)\d*)?.*/\1/')
+    - stage: "Tag"
+      name: "Create repository tag"
+      os: "linux"
+      dist: "bionic"
+      language: "minimal"
+      script:
+        - export TAG=v$(grep -P '^VERSION = ' Makefile | sed -r -e 's/VERSION = (.*)$/\1/')
+        - make Dockerfile
+        - git add -f Dockerfile
+        - git config user.name "Travis CI"
+        - git config user.email "travis@travis-ci.org"
+        - git commit -m"🔖 release ${TAG}"
+        - git tag ${TAG}
+        - git remote remove origin
+        - git remote add origin https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git push --delete origin :${TAG} || true
+        - git push --force --tags origin ${TAG}:${TAG}
+    - stage: "Release"
+      name: "Release assets"
+      os: "linux"
+      dist: "bionic"
+      language: "minimal"
+      script:
         - docker build --target=release --tag=release-assets:latest -f Dockerfile .
         - docker create --name=assets-container release-assets:latest
         - docker run --rm -it release-assets:latest find / -maxdepth 1 -type f -name \*.tar.gz -print0 | xargs -0 -I{} docker cp assets-container:"{}" .
